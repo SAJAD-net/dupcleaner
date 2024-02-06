@@ -1,15 +1,10 @@
 #!/usr/bin/bash
 
 startt=`date +%s`
-echo "> recording all the existing files in : $1" 
-find $1 -type f -print > ".dup.cleaner.files.txt"
-echo -e "< done. total files : `wc -l .dup.cleaner.files.txt | cut -d ' ' -f 1`\n"
 
 echo "> calculating the hashes"
-while IFS=$'\n' read -r line; do
-	md5sum "$line" >> ".dup.cleaner.hashes.txt"
-done < .dup.cleaner.files.txt
-echo -e "< done.\n"
+	find $1 -type f -exec md5sum {} + >> ".dup.cleaner.hashes.txt"
+echo -e "< done. total files : `wc -l .dup.cleaner.hashes.txt | cut -d ' ' -f 1`\n"
 
 echo "> finding the duplicates"
 awk 'NR==FNR{a[$1]++;next;}{ if (a[$1] > 1)print;}' .dup.cleaner.hashes.txt \
